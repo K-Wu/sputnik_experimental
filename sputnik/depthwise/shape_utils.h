@@ -49,7 +49,8 @@ struct ThreadBlock {
     // with bitwise ops instead of mod/div. We only need to support
     // a couple of cases.
     static_assert(kNewBlockDimX == 1 || kNewBlockDimX == 2 ||
-                  kNewBlockDimX == 4);
+                  kNewBlockDimX == 4,
+                  "");
     const int kThreadIdx = threadIdx.x + threadIdx.y * kBlockDimX;
 
     const int kBits = Log2(kNewBlockDimX);

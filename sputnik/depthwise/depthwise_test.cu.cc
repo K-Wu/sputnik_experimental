@@ -38,7 +38,7 @@ struct Problem {
   static constexpr int kPadding = kPadding_;
   static constexpr int kStride = kStride_;
 
-  static_assert(kDimH == kDimW);
+  static_assert(kDimH == kDimW, "");
 
   static constexpr int kDimOutH =
       (kDimH - kKernelSize + 2 * kPadding) / kStride + 1;
