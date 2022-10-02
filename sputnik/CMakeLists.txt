@@ -16,7 +16,14 @@ add_subdirectory(depthwise)
 add_subdirectory(bias_relu)
 add_subdirectory(softmax)
 add_subdirectory(utils)
-# TODO: add_subdirectory here for custom_spmm|sddmm
+
+# NB: <codegen> add_subdirectory here for custom_spmm|sddmm
+set(SPUTNIK_CUSTOM_SPMM_TEST_SRCS)
+set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS)
+add_subdirectory(custom_spmm)
+set(SPUTNIK_CUSTOM_SDDMM_TEST_SRCS)
+set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS)
+add_subdirectory(custom_sddmm)
 
 set(DIR_SRCS)
 
@@ -69,11 +76,13 @@ install(FILES "sputnik.h" DESTINATION ${INSTALL_BASE})
 install(FILES "bias_relu/bias_relu.h" DESTINATION "${INSTALL_BASE}/bias_relu")
 install(FILES "depthwise/cuda_depthwise.h" DESTINATION "${INSTALL_BASE}/depthwise")
 install(FILES "spmm/cuda_spmm.h" DESTINATION "${INSTALL_BASE}/spmm")
-# TODO: add custom_spmm|sddmm header install here.
 install(FILES "sddmm/cuda_sddmm.h" DESTINATION "${INSTALL_BASE}/sddmm")
 install(FILES "softmax/softmax.h" DESTINATION "${INSTALL_BASE}/softmax")
 install(FILES "softmax/sparse_softmax.h" DESTINATION "${INSTALL_BASE}/softmax")
 install(FILES "utils/index_format.h" DESTINATION "${INSTALL_BASE}/utils")
+# NB: <codegen> add custom_spmm|sddmm header install here.
+install(FILES "spmm/cuda_custom_spmm.h" DESTINATION "${INSTALL_BASE}/custom_spmm")
+install(FILES "sddmm/cuda_custom_sddmm.h" DESTINATION "${INSTALL_BASE}/custom_sddmm")
 
 # Optionally build the test suite.
 if (BUILD_TEST)
@@ -84,7 +93,24 @@ if (BUILD_TEST)
   file(GLOB TMP test_utils*)
   list(APPEND SPUTNIK_TEST_SRCS ${TMP})
 
-  # TODO: add custom_spmm|sddmm test build here.
+  # NB: <codegen> add custom_spmm|sddmm test build here.
+  # Custom SpMM test build.
+  list(APPEND SPUTNIK_CUSTOM_SPMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
+  
+  set(SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
+  list(FILTER SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+  set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+  add_executable(custom_spmm_test ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
+  target_link_libraries(custom_spmm_test sputnik ${SPUTNIK_TEST_LIBS})
+
+  # Custom SDDMM test build.
+  list(APPEND SPUTNIK_CUSTOM_SDDMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
+  
+  set(SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
+  list(FILTER SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+  set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+  add_executable(custom_sddmm_test ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
+  target_link_libraries(custom_sddmm_test sputnik ${SPUTNIK_TEST_LIBS})
 
   # SpMM test build.
   list(APPEND SPUTNIK_SPMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
@@ -125,7 +151,24 @@ if (BUILD_BENCHMARK)
   file(GLOB TMP test_utils*)
   list(APPEND SPUTNIK_BENCHMARK_SRCS ${TMP})
 
-  # TODO: add custom_spmm|sddmm benchmark build here.
+  # NB: <codegen> add custom_spmm|sddmm benchmark build here.
+  # Custom SpMM benchmark build.
+  list(APPEND SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
+  
+  set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
+  list(FILTER SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+  set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+  add_executable(custom_spmm_benchmark ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
+  target_link_libraries(custom_spmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
+
+  # Custom SDDMM benchmark build.
+  list(APPEND SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
+  
+  set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
+  list(FILTER SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+  set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+  add_executable(custom_sddmm_benchmark ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
+  target_link_libraries(custom_sddmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
   
   # SpMM benchmark build.
   list(APPEND SPUTNIK_SPMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
