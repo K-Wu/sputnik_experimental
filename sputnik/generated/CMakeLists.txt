@@ -11,7 +11,8 @@ MACRO(SUBDIRLIST result curdir)
   SET(${result} ${dirlist})
 ENDMACRO()
 
-# NB: <codegen> add_subdirectory here for custom_spmm|sddmm
+# NB: <codegen> add_subdirectory here for custom op, e.g., custom_spmm|sddmm
+# we need to store variables from parent scope to propagate them to cmake process in subdirectories
 set(SPUTNIK_SRCS ${SPUTNIK_SRCS})
 set(SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS ${SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS})
 set(SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS ${SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS})
@@ -27,12 +28,8 @@ FOREACH(child ${children})
       add_subdirectory(${child})
     ENDIF()
 ENDFOREACH()
+# similarly, we need to pass updated variables from cmake process in subdirectories to parent folder
 set(SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS ${SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS} PARENT_SCOPE)
 set(SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS ${SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS} PARENT_SCOPE)
 set(SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS ${SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS} PARENT_SCOPE)
 set(SPUTNIK_SRCS ${SPUTNIK_SRCS} PARENT_SCOPE)
-
-
-# NB: <codegen> add custom_spmm|sddmm header install here.
-# install(FILES "custom_spmm/cuda_custom_spmm.h" DESTINATION "${INSTALL_BASE}/custom_spmm")
-# install(FILES "custom_sddmm/cuda_custom_sddmm.h" DESTINATION "${INSTALL_BASE}/custom_sddmm")
