@@ -49,9 +49,10 @@ This is not an official Google product.
 ### Build on Windows
 I successfully built this on Windows 11 via MSVC Visual Studio 2022 and built-in CMakeFiles. Windows-specific routines are added to CMake configurations, namely `cmake/Dependencies.cmake`, and some source files are modified, including switch one-argument `static_assert` to two-argument invocations.
 
-To build this on windows, please 1) build glog first as it is needed, and 2) specify the following arguments to cmake process 
+To build and install this on windows, please 1) build glog first as it is needed, and 2) specify the following arguments to cmake process 
 ```
 -DCUDA_ARCHS="75" -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_TEST=ON -DBUILD_BENCHMARK=ON -DGLOG_ROOT_DIR="D:/external-repos/glog/out/install/x64-Debug" -DGLOG_INCLUDE_DIR="D:/external-repos/glog/out/install/x64-Debug/include"
+make DESTDIR=./install install
 ```
 Please change the cuda_archs, test|benchmark build switch, and glog path according to your actual machine configurations.
 
