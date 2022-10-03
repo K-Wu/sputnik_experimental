@@ -19,11 +19,17 @@ add_subdirectory(utils)
 
 # NB: <codegen> iterates subdirs in generated/ and set up source file, benchmark file, test file lists.
 if (BUILD_GENERATED)
-  set(SPUTNIK_CUSTOM_SPMM_TEST_SRCS)
-  set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS)
-  set(SPUTNIK_CUSTOM_SDDMM_TEST_SRCS)
-  set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS)
+  # set(SPUTNIK_CUSTOM_SPMM_TEST_SRCS)
+  # set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS)
+  # set(SPUTNIK_CUSTOM_SDDMM_TEST_SRCS)
+  # set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS)
+  set(SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS)
+  set(SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS)
+  set(SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS)
   add_subdirectory(generated)
+  message(STATUS "SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS: ${SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS}")
+  message(STATUS "SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS: ${SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS}")
+  message(STATUS "SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS: ${SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS}")
 endif()
 
 set(DIR_SRCS)
@@ -94,22 +100,42 @@ if (BUILD_TEST)
   if (BUILD_GENERATED)
     # NB: <codegen> add custom_spmm|sddmm test build here.
     # Custom SpMM test build.
-    list(APPEND SPUTNIK_CUSTOM_SPMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
-    
-    set(SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
-    list(FILTER SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
-    set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
-    add_executable(custom_spmm_test ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
-    target_link_libraries(custom_spmm_test sputnik ${SPUTNIK_TEST_LIBS})
+    # list(APPEND SPUTNIK_CUSTOM_SPMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
+    # 
+    # set(SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
+    # list(FILTER SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+    # set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+    # add_executable(custom_spmm_test ${SPUTNIK_CUSTOM_SPMM_TEST_SRCS})
+    # target_link_libraries(custom_spmm_test sputnik ${SPUTNIK_TEST_LIBS})
 
     # Custom SDDMM test build.
-    list(APPEND SPUTNIK_CUSTOM_SDDMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
-    
-    set(SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
-    list(FILTER SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
-    set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
-    add_executable(custom_sddmm_test ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
-    target_link_libraries(custom_sddmm_test sputnik ${SPUTNIK_TEST_LIBS})
+    # list(APPEND SPUTNIK_CUSTOM_SDDMM_TEST_SRCS ${SPUTNIK_TEST_SRCS})
+    # 
+    # set(SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
+    # list(FILTER SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+    # set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+    # add_executable(custom_sddmm_test ${SPUTNIK_CUSTOM_SDDMM_TEST_SRCS})
+    # target_link_libraries(custom_sddmm_test sputnik ${SPUTNIK_TEST_LIBS})
+
+    list(LENGTH SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS num_generated_custom_ops)
+    message(STATUS "num_generated_custom_ops: ${num_generated_custom_ops}")
+    MATH(EXPR num_generated_custom_ops "${num_generated_custom_ops} - 1") # foreach in cmake include stop
+    foreach(curr_idx_generated_custom_ops RANGE ${num_generated_custom_ops})
+      list(GET SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_TEST_SRCS)
+      list(GET SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS)
+      list(GET SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_DIR_NAME)
+      message(STATUS "CURR_GENERATED_CUSTOM_OP_DIR_NAME: ${CURR_GENERATED_CUSTOM_OP_DIR_NAME}")
+      message(STATUS "CURR_GENERATED_CUSTOM_OP_TEST_SRCS: ${CURR_GENERATED_CUSTOM_OP_TEST_SRCS}")
+      message(STATUS "CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS: ${CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS}")
+      
+      list(APPEND CURR_GENERATED_CUSTOM_OP_TEST_SRCS ${SPUTNIK_TEST_SRCS})
+      set(CURR_GENERATED_CUSTOM_OP_TEST_CUDA_SRCS ${CURR_GENERATED_CUSTOM_OP_TEST_SRCS})
+      list(FILTER CURR_GENERATED_CUSTOM_OP_TEST_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+      set_source_files_properties(${CURR_GENERATED_CUSTOM_OP_TEST_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)
+      add_executable(${CURR_GENERATED_CUSTOM_OP_DIR_NAME}_test ${CURR_GENERATED_CUSTOM_OP_TEST_SRCS})
+      target_link_libraries(${CURR_GENERATED_CUSTOM_OP_DIR_NAME}_test sputnik ${SPUTNIK_TEST_LIBS})
+    endforeach()
+
   endif()
 
   # SpMM test build.
@@ -154,22 +180,37 @@ if (BUILD_BENCHMARK)
   if (BUILD_GENERATED)
     # NB: <codegen> add custom_spmm|sddmm benchmark build here.
     # Custom SpMM benchmark build.
-    list(APPEND SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
-    
-    set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
-    list(FILTER SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
-    set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
-    add_executable(custom_spmm_benchmark ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
-    target_link_libraries(custom_spmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
+    # list(APPEND SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
+    # 
+    # set(SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
+    # list(FILTER SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+    # set_source_files_properties(${SPUTNIK_CUSTOM_SPMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+    # add_executable(custom_spmm_benchmark ${SPUTNIK_CUSTOM_SPMM_BENCHMARK_SRCS})
+    # target_link_libraries(custom_spmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
 
     # Custom SDDMM benchmark build.
-    list(APPEND SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
-    
-    set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
-    list(FILTER SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
-    set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
-    add_executable(custom_sddmm_benchmark ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
-    target_link_libraries(custom_sddmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
+    # list(APPEND SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
+    # 
+    # set(SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
+    # list(FILTER SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+    # set_source_files_properties(${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)  
+    # add_executable(custom_sddmm_benchmark ${SPUTNIK_CUSTOM_SDDMM_BENCHMARK_SRCS})
+    # target_link_libraries(custom_sddmm_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
+
+    list(LENGTH SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS num_generated_custom_ops)
+    MATH(EXPR num_generated_custom_ops "${num_generated_custom_ops} - 1") # foreach in cmake include stop
+    foreach(curr_idx_generated_custom_ops RANGE ${num_generated_custom_ops})
+      list(GET SPUTNIK_CUSTOM_OP_TEST_SRCS_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_TEST_SRCS)
+      list(GET SPUTNIK_CUSTOM_OP_BENCHMARK_SRCS_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS)
+      list(GET SPUTNIK_CUSTOM_OP_DIR_NAME_LISTS ${curr_idx_generated_custom_ops} CURR_GENERATED_CUSTOM_OP_DIR_NAME)
+
+      list(APPEND CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS ${SPUTNIK_BENCHMARK_SRCS})
+      set(CURR_GENERATED_CUSTOM_OP_BENCHMARK_CUDA_SRCS ${CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS})
+      list(FILTER CURR_GENERATED_CUSTOM_OP_BENCHMARK_CUDA_SRCS INCLUDE REGEX "\.cu\.cc")
+      set_source_files_properties(${CURR_GENERATED_CUSTOM_OP_BENCHMARK_CUDA_SRCS} PROPERTIES LANGUAGE CUDA)
+      add_executable(${CURR_GENERATED_CUSTOM_OP_DIR_NAME}_benchmark ${CURR_GENERATED_CUSTOM_OP_BENCHMARK_SRCS})
+      target_link_libraries(${CURR_GENERATED_CUSTOM_OP_DIR_NAME}_benchmark sputnik ${SPUTNIK_BENCHMARK_LIBS})
+    endforeach()
   endif()
   
   # SpMM benchmark build.

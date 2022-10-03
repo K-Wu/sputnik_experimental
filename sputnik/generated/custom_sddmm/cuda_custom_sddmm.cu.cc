@@ -19,12 +19,12 @@
 #include "sputnik/common.h"
 #include "sputnik/cuda_utils.h"
 #include "sputnik/load_store.h"
-#include "sputnik/custom_sddmm/all_reduce.h"
-#include "sputnik/custom_sddmm/compute_utils.h"
-#include "sputnik/custom_sddmm/cuda_custom_sddmm.h"
-#include "sputnik/custom_sddmm/dense_to_reg.h"
-#include "sputnik/custom_sddmm/dense_to_shared.h"
-#include "sputnik/custom_sddmm/output_tile.h"
+#include "sputnik/generated/custom_sddmm/all_reduce.h"
+#include "sputnik/generated/custom_sddmm/compute_utils.h"
+#include "sputnik/generated/custom_sddmm/cuda_custom_sddmm.h"
+#include "sputnik/generated/custom_sddmm/dense_to_reg.h"
+#include "sputnik/generated/custom_sddmm/dense_to_shared.h"
+#include "sputnik/generated/custom_sddmm/output_tile.h"
 #include "sputnik/tiling_utils.h"
 
 namespace sputnik {

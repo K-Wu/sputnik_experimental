@@ -17,8 +17,8 @@
 
 #include "sputnik/cuda_utils.h"
 #include "sputnik/matrix_utils.h"
-#include "sputnik/custom_spmm/cuda_custom_spmm.h"
-#include "sputnik/custom_spmm/custom_spmm_config.h"
+#include "sputnik/generated/custom_spmm/cuda_custom_spmm.h"
+#include "sputnik/generated/custom_spmm/custom_spmm_config.h"
 #include "sputnik/test_utils.h"
 
 #include "gmock/gmock.h"

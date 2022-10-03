@@ -21,7 +21,7 @@
  */
 
 #include "sputnik/load_store.h"
-#include "sputnik/custom_spmm/predicate_utils.h"
+#include "sputnik/generated/custom_spmm/predicate_utils.h"
 #include "sputnik/type_utils.h"
 
 namespace sputnik {

@@ -14,7 +14,7 @@
 
 #include "sputnik/cuda_utils.h"
 #include "sputnik/matrix_utils.h"
-#include "sputnik/custom_sddmm/cuda_custom_sddmm.h"
+#include "sputnik/generated/custom_sddmm/cuda_custom_sddmm.h"
 
 #include "absl/random/random.h"
 #include "benchmark/benchmark.h"

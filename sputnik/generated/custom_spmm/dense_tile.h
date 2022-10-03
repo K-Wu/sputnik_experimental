@@ -22,7 +22,7 @@
 
 #include "sputnik/cuda_utils.h"
 #include "sputnik/load_store.h"
-#include "sputnik/custom_spmm/predicate_utils.h"
+#include "sputnik/generated/custom_spmm/predicate_utils.h"
 #include "sputnik/tiling_utils.h"
 #include "sputnik/type_utils.h"
 #include "sputnik/vector_utils.h"
