@@ -52,14 +52,17 @@ I successfully built this on Windows 11 via MSVC Visual Studio 2022 and built-in
 To build and install this on windows, please 1) build glog first as it is needed, and 2) specify the following arguments to cmake process 
 ```
 -DCUDA_ARCHS="75" -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=TRUE -DBUILD_TEST=ON -DBUILD_BENCHMARK=ON -DBUILD_GENERATED=ON -DGLOG_ROOT_DIR="D:/external-repos/glog/out/install/x64-Debug" -DGLOG_INCLUDE_DIR="D:/external-repos/glog/out/install/x64-Debug/include"
-make -j
-make DESTDIR=./install install
 ```
 Please change the cuda_archs, test|benchmark build switch, and glog path according to your actual machine configurations.
 
 Symbol export is necessary on windows and that is what -D solves. See [Create dlls on Windows without declspec() using new CMake export all feature](https://www.kitware.com/create-dlls-on-windows-without-declspec-using-new-cmake-export-all-feature/) for details.
 
 There might be some compilation errors due to some C/C++ flavors are supported differently. For example, you may need to remove typedef base class declaration and use the full class declaration instead in `third_party/abseil-cpp/absl/random/internal/uniform_helper.h`.
+
+### Command to install with custom prefix
+```
+make DESTDIR=./install install
+```
 
 ### Command to push as a submodule
 ```
