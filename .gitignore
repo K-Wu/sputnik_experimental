@@ -1,3 +1,4 @@
 .vs
 out
 build
+sputnik/generated/gen_*
