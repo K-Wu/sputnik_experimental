@@ -68,3 +68,8 @@ make DESTDIR=./install install
 ```
 git push origin HEAD:master
 ```
+
+### Code Quality
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5213a6f01d0441c4b9a4dd45a22dca18)](https://www.codacy.com?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=K-Wu/sputnik_experimental&amp;utm_campaign=Badge_Grade)
+
+[![CodeFactor](https://www.codefactor.io/repository/github/k-wu/sputnik_experimental/badge?s=089e5d4fbed29d47be997442b3c30a3c61249b65)](https://www.codefactor.io/repository/github/k-wu/sputnik_experimental)
