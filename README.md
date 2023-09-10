@@ -45,7 +45,7 @@ The sparse models and dataset of sparse matrices from deep neural networks from 
 This is not an official Google product.
 
 
-## Contributing To This Repo As An Core Third-Party Component in Hetero_EdgeSoftMax Repo
+## Contributing To This Repo As An Core Third-Party Component in HET Repo
 ### Build on Windows
 I successfully built this on Windows 11 via MSVC Visual Studio 2022 and built-in CMakeFiles. Windows-specific routines are added to CMake configurations, namely `cmake/Dependencies.cmake`, and some source files are modified, including switch one-argument `static_assert` to two-argument invocations.
 

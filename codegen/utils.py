@@ -24,8 +24,8 @@ def get_git_root_path():
 def get_sputnik_root_path():
     """Get the root path of the sputnik repository."""
     current_project_root_path = get_git_root_path()
-    # current_project_root_path could be either hetero_edgesoftmax or sputnik
-    if current_project_root_path.endswith("hetero_edgesoftmax"):
+    # current_project_root_path could be either HET or sputnik
+    if current_project_root_path.endswith("HET"):
         return os.path.join(current_project_root_path, "third_party", "sputnik")
     elif current_project_root_path.endswith("sputnik"):
         return current_project_root_path
