@@ -29,9 +29,11 @@ endforeach(FILE)
 
 # Build SpMM cubin
 # Result will be at sputnik/build/sputnik/spmm/CMakeFiles/cuda_spmm.dir/cuda_spmm.cu.cubin
-add_library(cuda_spmm OBJECT cuda_spmm.cu.cc)
-set_source_files_properties(cuda_spmm.cu.cc PROPERTIES LANGUAGE CUDA)
-set_property(TARGET cuda_spmm PROPERTY CUDA_CUBIN_COMPILATION ON)
+if (BUILD_CUBIN)
+  add_library(cuda_spmm OBJECT cuda_spmm.cu.cc)
+  set_source_files_properties(cuda_spmm.cu.cc PROPERTIES LANGUAGE CUDA)
+  set_property(TARGET cuda_spmm PROPERTY CUDA_CUBIN_COMPILATION ON)
+endif()
 
 # Add the sources to the build.
 set(SPUTNIK_SRCS ${SPUTNIK_SRCS} ${DIR_SRCS} PARENT_SCOPE)
