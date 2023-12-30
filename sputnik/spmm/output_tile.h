@@ -73,6 +73,7 @@ struct OutputTile {
         reinterpret_cast<Value*>(output_matrix + output_offset) + thread_idx_x;
   }
 
+  template <bool atomicStoreFlag>
   __device__ __forceinline__ void Store(const Predicates& predicates_n) {
 #pragma unroll
     for (int x_item_idx = 0; x_item_idx < kThreadItemsX_; ++x_item_idx) {
@@ -91,11 +92,19 @@ struct OutputTile {
           const int fragment_offset =
               x_item_idx * kElementsPerScalar_ * kValuesPerStore_;
           Convert(output_fragment_ + fragment_offset, &out);
-          sputnik::Store(out, output_matrix_);
+          if constexpr (atomicStoreFlag) {
+            sputnik::StoreAtomic(out, output_matrix_);
+          } else {
+            sputnik::Store(out, output_matrix_);
+          }
         } else {
           const Value* output_fragment =
               reinterpret_cast<const Value*>(output_fragment_);
-          *output_matrix_ = output_fragment[x_item_idx];
+          if constexpr (atomicStoreFlag) {
+            sputnik::StoreAtomic(output_fragment[x_item_idx], output_matrix_);
+          } else {
+            *output_matrix_ = output_fragment[x_item_idx];
+          }
         }
         // Increment the pointers for the next iteration.
         output_matrix_ += kBlockWidth;

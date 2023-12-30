@@ -41,57 +41,36 @@ struct SpmmKernel {
   /// Shortcuts for commonly used specialized types.
   //
 
-  typedef TilingUtils<
-      Config::kBlockItemsY,
-      Config::kBlockItemsK,
-      Config::kBlockItemsX>
+  typedef TilingUtils<Config::kBlockItemsY, Config::kBlockItemsK,
+                      Config::kBlockItemsX>
       Tiling;
 
-  typedef PredicateVector<
-      Config::kThreadItemsX>
-      PredicateVector;
+  typedef PredicateVector<Config::kThreadItemsX> PredicateVector;
 
-  typedef PredicatesN<
-      typename Config::DenseValue,
-      Config::kBlockItemsX,
-      Config::kBlockWidth>
+  typedef PredicatesN<typename Config::DenseValue, Config::kBlockItemsX,
+                      Config::kBlockWidth>
       PredicatesN;
 
-  typedef MemoryAligner<
-      typename Config::SparseValue,
-      Config::kBlockWidth>
+  typedef MemoryAligner<typename Config::SparseValue, Config::kBlockWidth>
       MemoryAligner;
 
-  typedef SparseTile<
-      typename Config::SparseValue,
-      Config::kBlockItemsK,
-      Config::kBlockWidth>
+  typedef SparseTile<typename Config::SparseValue, Config::kBlockItemsK,
+                     Config::kBlockWidth>
       SparseTile;
 
-  typedef DenseTile<
-      typename Config::DenseValue,
-      Config::kBlockItemsK,
-      Config::kBlockItemsX,
-      Config::kBlockWidth,
-      Config::kResidueUnroll>
+  typedef DenseTile<typename Config::DenseValue, Config::kBlockItemsK,
+                    Config::kBlockItemsX, Config::kBlockWidth,
+                    Config::kResidueUnroll>
       DenseTile;
 
-  typedef ComputeUtils<
-      typename Config::DenseValue,
-      Config::kBlockItemsK,
-      Config::kBlockItemsX,
-      Config::kBlockWidth>
+  typedef ComputeUtils<typename Config::DenseValue, Config::kBlockItemsK,
+                       Config::kBlockItemsX, Config::kBlockWidth>
       Computer;
 
-  typedef Barrier<
-      Config::kBlockItemsY,
-      Config::kBlockWidth>
-      Barrier;
+  typedef Barrier<Config::kBlockItemsY, Config::kBlockWidth> Barrier;
 
-  typedef OutputTile<
-      typename Config::DenseValue,
-      Config::kBlockItemsX,
-      Config::kBlockWidth>
+  typedef OutputTile<typename Config::DenseValue, Config::kBlockItemsX,
+                     Config::kBlockWidth>
       OutputTile;
 
   typedef typename Config::ScalarValue ScalarValue;
@@ -103,7 +82,8 @@ struct SpmmKernel {
   /**
    * @brief Main function for SpMM kernel.
    */
-  static __device__ __forceinline__ void KernelFn(
+  template <bool atomicStoreFlag>
+  static __device__ __forceinline__ void _KernelFn(
       int m, int k, int n, const int* __restrict__ row_indices,
       const ScalarValue* __restrict__ values,
       const int* __restrict__ row_offsets,
@@ -279,8 +259,10 @@ struct SpmmKernel {
     // Create a storer for the output matrix.
     OutputTile output_tile_storer(m_index, n_index, n, threadIdx.x,
                                   output_fragment, out);
-    output_tile_storer.Store(predicates_n);
+    output_tile_storer.Store<atomicStoreFlag>(predicates_n);
   }
+  constexpr static auto KernelFn = _KernelFn<false>;
+  constexpr static auto KernelFnAtomic = _KernelFn<true>;
 };
 
 template <typename Config>
@@ -331,9 +313,7 @@ using FloatTable = std::unordered_map<std::string, FloatSpmmFn>;
 
 std::string MakeHandle(int m, int k, int n, int nonzeros) {
   // NOTE: We don't include the number of nonzeros currently.
-  return std::to_string(m) + "_" +
-      std::to_string(k) + "_" +
-      std::to_string(n);
+  return std::to_string(m) + "_" + std::to_string(k) + "_" + std::to_string(n);
 }
 
 FloatTable* GetFloatTable() {
