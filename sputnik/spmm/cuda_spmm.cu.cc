@@ -20,11 +20,13 @@
 #include "sputnik/barrier.h"
 #include "sputnik/cuda_utils.h"
 #include "sputnik/load_store.h"
+#include "sputnik/load_store_atomic.h"
 #include "sputnik/memory_aligner.h"
 #include "sputnik/spmm/compute_utils.h"
 #include "sputnik/spmm/cuda_spmm.h"
 #include "sputnik/spmm/dense_tile.h"
 #include "sputnik/spmm/output_tile.h"
+#include "sputnik/spmm/output_tile_atomic.h"
 #include "sputnik/spmm/predicate_utils.h"
 #include "sputnik/spmm/sparse_tile.h"
 #include "sputnik/spmm/spmm_config.h"
@@ -259,7 +261,13 @@ struct SpmmKernel {
     // Create a storer for the output matrix.
     OutputTile output_tile_storer(m_index, n_index, n, threadIdx.x,
                                   output_fragment, out);
-    output_tile_storer.Store<atomicStoreFlag>(predicates_n);
+    if constexpr (atomicStoreFlag) {
+      sputnik::MyStore<typename Config::DenseValue, Config::kBlockItemsX,
+                       Config::kBlockWidth, atomicStoreFlag>(output_tile_storer,
+                                                             predicates_n);
+    } else {
+      output_tile_storer.Store(predicates_n);
+    }
   }
   constexpr static auto KernelFn = _KernelFn<false>;
   constexpr static auto KernelFnAtomic = _KernelFn<true>;
