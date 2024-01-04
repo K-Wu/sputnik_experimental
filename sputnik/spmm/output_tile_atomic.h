@@ -3,6 +3,7 @@
 #define THIRD_PARTY_SPUTNIK_SPMM_OUTPUT_TILE_ATOMIC_H_
 
 #include "sputnik/load_store.h"
+#include "sputnik/load_store_atomic.h"
 #include "sputnik/spmm/output_tile.h"
 #include "sputnik/spmm/predicate_utils.h"
 #include "sputnik/type_utils.h"
