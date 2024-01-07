@@ -19,12 +19,14 @@
 #include "sputnik/common.h"
 #include "sputnik/cuda_utils.h"
 #include "sputnik/load_store.h"
+#include "sputnik/load_store_atomic.h"
 #include "sputnik/sddmm/all_reduce.h"
 #include "sputnik/sddmm/compute_utils.h"
 #include "sputnik/sddmm/cuda_sddmm.h"
 #include "sputnik/sddmm/dense_to_reg.h"
 #include "sputnik/sddmm/dense_to_shared.h"
 #include "sputnik/sddmm/output_tile.h"
+#include "sputnik/sddmm/output_tile_atomic.h"
 #include "sputnik/tiling_utils.h"
 
 namespace sputnik {
@@ -32,7 +34,8 @@ namespace sputnik {
 namespace {
 
 template <typename LoadType, int kBlockItemsY, int kBlockItemsK,
-    int kBlockItemsX, int kBlockWidth, int kPredicateK = true>
+          int kBlockItemsX, int kBlockWidth, int kPredicateK = true,
+          bool atomicStoreFlag = false>
 __global__ void __launch_bounds__(kBlockItemsY* kBlockWidth)
     CudaSddmmKernel(int m, int k, int n, const int* __restrict__ row_indices,
                     const int* __restrict__ row_offsets,
@@ -161,7 +164,12 @@ __global__ void __launch_bounds__(kBlockItemsY* kBlockWidth)
   //
   ///  Write the results to the output.
   //
-  output_tile_storer.Store(nonzeros);
+  if constexpr (atomicStoreFlag) {
+    MyStore<kBlockItemsX, kBlockWidth, atomicStoreFlag>(output_tile_storer,
+                                                        nonzeros);
+  } else {
+    output_tile_storer.Store(nonzeros);
+  }
 }
 
 }  // namespace
@@ -209,9 +217,10 @@ cudaError_t CudaSddmmEx(
   dim3 block_dim(kBlockWidth, kBlockItemsY, 1);
 
   CudaSddmmKernel<LoadType, kBlockItemsY, kBlockItemsK, kBlockItemsX,
-                  kBlockWidth, kPredicateK><<<grid_dim, block_dim, 0, stream>>>(
-      m, k, n, row_indices, row_offsets, column_indices, lhs_matrix, rhs_matrix,
-      output_values);
+                  kBlockWidth, kPredicateK, false>
+      <<<grid_dim, block_dim, 0, stream>>>(m, k, n, row_indices, row_offsets,
+                                           column_indices, lhs_matrix,
+                                           rhs_matrix, output_values);
   return cudaGetLastError();
 }
 
